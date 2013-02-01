@@ -3,10 +3,12 @@
 define(
   [
     'flight/lib/component',
-    'app/rpncalcFunctions'
+    'app/rpncalcFunctions',
+    'app/keys',
+    'app/rpncalcHelpers'
   ],
 
-  function(defineComponent, rpncalcFunctions) {
+  function(defineComponent, rpncalcFunctions, keys, rpncalcHelpers) {
     return defineComponent(input);
 
     function input() {
@@ -27,7 +29,7 @@ define(
           },
           function() {
             self.$node.val('');
-            self.trigger('uiStackChanged');
+            rpncalcHelpers.update(self);
             return callback();
           })
           .fail(function() {
@@ -100,7 +102,7 @@ define(
 
         default:
           var matchingCommands = rpncalcFunctions.commands.filter(function(cmd) {
-            return cmd.name == key;
+            return cmd.name == key || cmd.fullName == key;
           });
           if (matchingCommands.length > 0) {
             var cmd = matchingCommands[0];
@@ -112,12 +114,12 @@ define(
               var jqxhr = $.post(
                 '/rpncalc/execute',
                 {
-                  commandName: cmd.name,
+                  commandName: cmd.fullName,
                   time: Date.now()
                 },
                 function() {
                   console.log('rpncalc execute succeeded');
-                  return self.trigger('uiStackChanged');
+                  return rpncalcHelpers.update(self);
                 })
                 .fail(function() {
                   var json = JSON.parse(jqxhr.responseText);
@@ -127,7 +129,7 @@ define(
               return 0;
             });
           } else {
-            self.trigger('uiError', { message: 'Unhandled key: ' + key });
+            self.trigger('uiError', { message: 'command ' + key + ' not found.'});
           }
           break;
         }
@@ -138,8 +140,77 @@ define(
         this.execute(key);
       };
 
+      this.keyPressed = function(ev, data) {
+        var self = this;
+        switch (ev.which) {
+        case keys.PLUS:
+        case keys.MINUS:
+        case keys.ASTERISK:
+        case keys.FORWARD_SLASH:
+          ev.preventDefault();
+          this.pushInput(function(err) {
+            if (err) {
+              return self.trigger('uiError', { message: err.message });
+            }
+            switch (ev.which) {
+            case keys.PLUS:
+              self.execute('plus');
+              break;
+            case keys.MINUS:
+              self.execute('subtract');
+              break;
+            case keys.ASTERISK:
+              self.execute('multiply');
+              break;
+            case keys.FORWARD_SLASH:
+              self.execute('divide');
+              break;
+            }
+          });
+          break;
+        default:
+          console.log('onKeyPress', ev.which);
+        }
+      };
+
+      this.keyDown = function(ev, data) {
+        var self = this;
+        switch (ev.which) {
+        case keys.BACKSPACE:
+          if (this.getStackInputValue().length > 0) {
+            // do nothing
+          } else {
+            this.execute('drop');
+          }
+          break;
+
+        case keys.ENTER:
+          this.pushInput(function(err) {
+            if (err) {
+              return self.trigger('uiError', { message: err.message });
+            }
+            return 0;
+          });
+          break;
+
+        default:
+          console.log('onKeyDown', ev.which);
+        }
+      };
+
+      this.onBlur = function() {
+        var self = this;
+        setTimeout(function() {
+          self.$node.focus();
+        }, 100);
+      };
+
       this.after('initialize', function() {
         this.on(document, 'uiButtonClicked', this.buttonClick);
+        this.on(document.body, 'keypress', this.keyPressed);
+        this.on(document.body, 'keydown', this.keyDown);
+        this.on('blur', this.onBlur);
+        this.$node.focus();
       });
     }
   }

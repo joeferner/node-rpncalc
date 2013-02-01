@@ -28,6 +28,7 @@ define(
 
       this.after('initialize', function() {
         this.on(document, 'uiButtonClicked', this.clearErrors);
+        this.on(document.body, 'keydown', this.clearErrors);
         this.on(document, 'uiError', this.displayError);
       });
     }
