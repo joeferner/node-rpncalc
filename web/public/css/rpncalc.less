@@ -2,7 +2,7 @@
 
 @statusBarHeight: 20px;
 @buttonsHeight: 190px;
-@stackInputContainerHeight: 25px;
+@inputContainerHeight: 25px;
 @buttonsDoubleHeightWidth: 400px;
 @buttonsDoubleHeight: ((@buttonsHeight * 2) - 50);
 
@@ -64,9 +64,9 @@ body {
   left: 0;
   right: -1;
   top: @statusBarHeight;
-  bottom: (@buttonsHeight + @stackInputContainerHeight + 1);
+  bottom: (@buttonsHeight + @inputContainerHeight + 1);
   @media (max-width: @buttonsDoubleHeightWidth) {
-    bottom: (@buttonsDoubleHeight + @stackInputContainerHeight + 1);
+    bottom: (@buttonsDoubleHeight + @inputContainerHeight + 1);
   }
   padding-left: 5px;
 }
@@ -84,15 +84,15 @@ body {
   text-align: right;
 }
 
-#stackInput {
+#input {
   text-align: left;
   width: 100%;
   border: none;
   font-size: 12pt;
 }
 
-#stackInputContainer {
-  height: @stackInputContainerHeight;
+#inputContainer {
+  height: @inputContainerHeight;
   position: fixed;
   left: 0;
   right: -1;
@@ -101,7 +101,7 @@ body {
   padding-left: 5px;
 }
 
-#stackInput:focus {
+#input:focus {
   outline: none;
 }
 

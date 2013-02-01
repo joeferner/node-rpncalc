@@ -3,8 +3,9 @@
   <title>RPNCalc</title>
   <script type="text/javascript" src="/jquery/jquery.js"></script>
   <script type="text/javascript" src="/ejs/ejs.js"></script>
-  <script type="text/javascript" src="/browserify.js"></script>
-  <script type="text/javascript" src="/scripts/rpncalc.ui.js"></script>
+  <script type="text/javascript" src="/es5-shim/es5-shim.js"></script>
+  <script type="text/javascript" src="/es5-shim/es5-sham.js"></script>
+  <script type="text/javascript" src="/requirejs/require.js" data-main="requireMain.js"></script>
   <link type="text/css" rel="stylesheet" href="/css/rpncalc.css">
 </head>
 <body>
@@ -12,6 +13,9 @@
   <div id="statusBar"></div>
   <div id="error"></div>
   <div id="stack"></div>
+  <div id="inputContainer">
+    <input id="input" value="">
+  </div>
   <div id="buttons">
     <div class="wider">
       <button>Enter</button>
@@ -91,13 +95,31 @@
     </div>
     [% } %]
   </div>
-  <div id="stackInputContainer">
-    <input id="stackInput" class="stackItem stackItemInput" value="[%= stackInputValue %]">
-  </div>
 </script>
 <script id="statusBarTemplate" type="text/ejs">
   <div id="angleMode" class="firstItem">[%= helpers.angleModeToString(rpncalc.angleMode) %]</div>
   <div id="numBase">[%= helpers.numBaseToString(rpncalc.numBase) %]</div>
 </script>
+
+<script type="text/javascript">
+  require(
+    [
+      'flight/lib/compose',
+      'flight/lib/registry',
+      'flight/lib/advice',
+      'flight/lib/logger',
+      'flight/tools/debug/debug'
+    ],
+
+    function(compose, registry, advice, withLogging, debug) {
+      debug.enable(true);
+      compose.mixin(registry, [advice.withAdvice, withLogging]);
+      require(['app/main'], function(initialize) {
+        initialize();
+      });
+    }
+  );
+</script>
+
 </body>
 </html>

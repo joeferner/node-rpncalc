@@ -91,33 +91,6 @@ $(function() {
     });
   }
 
-  function getStackInputValue() {
-    if (inputElem) {
-      return $(inputElem).val();
-    }
-    return '';
-  }
-
-  function displayError(err) {
-    errorElem.innerHTML = err.message;
-    console.error('Error:', err.message);
-    $(errorElem).show();
-  }
-
-  function clearError() {
-    errorElem.innerHTML = '';
-    $(errorElem).hide();
-  }
-
-  function pushInput() {
-    var val = getStackInputValue();
-    if (val.length > 0) {
-      rpncalc.push(val);
-      $(inputElem).val('');
-      update();
-    }
-  }
-
   function onKeyPress(event) {
     try {
       switch (event.which) {
@@ -171,78 +144,6 @@ $(function() {
       default:
         console.log('onKeyDown', event.which);
       }
-    } catch (e) {
-      displayError(e);
-    }
-  }
-
-  function onButtonClick() {
-    var val = getStackInputValue();
-    clearError();
-    try {
-      var key = $(this).attr('fn');
-      if (!key) {
-        key = $(this).html().trim().toLowerCase();
-      }
-      switch (key) {
-      case 'enter':
-        pushInput();
-        break;
-
-      case 'drop':
-        rpncalc.drop();
-        update();
-        break;
-
-      case 'swap':
-        rpncalc.swap();
-        update();
-        break;
-
-      case '+/-':
-        if (val.length > 0) {
-          if (inputElem.value[0] == '-') {
-            inputElem.value = inputElem.value.substr(1);
-          } else {
-            inputElem.value = '-' + inputElem.value;
-          }
-        } else {
-          rpncalc.neg();
-          update();
-        }
-        break;
-
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-      case '.':
-        inputElem.value += key;
-        break;
-
-      case 'pi':
-        pushInput();
-        rpncalc.push(Math.PI);
-        update();
-        break;
-
-      default:
-        if (rpncalc[key]) {
-          pushInput();
-          rpncalc[key]();
-          update();
-        } else {
-          throw new Error("Unhandled key: " + key);
-        }
-        break;
-      }
-      inputElem.focus();
     } catch (e) {
       displayError(e);
     }

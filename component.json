@@ -4,6 +4,6 @@
   "dependencies": {
     "flight": "~1.0.0",
     "ejs": "~0.8.3",
-    "jquery": "~1.9.0"
+    "requirejs": "~2.1.4"
   }
 }
