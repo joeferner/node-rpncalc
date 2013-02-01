@@ -9,8 +9,12 @@ $(function() {
   var statusBarElem = document.getElementById('statusBar');
   var errorElem = document.getElementById('error');
   var inputElem = null;
-  var statusBarTemplate = new EJS({ element: 'statusBarTemplate' });
-  var stackTemplate = new EJS({ element: 'stackTemplate' });
+  var ejsOptions = {
+    open: '[%',
+    close: '%]'
+  };
+  var statusBarTemplate = ejs.compile(document.getElementById('statusBarTemplate').innerHTML, ejsOptions);
+  var stackTemplate = ejs.compile(document.getElementById('stackTemplate').innerHTML, ejsOptions);
   update();
   setTimeout(onWindowResize, 100);
   setTimeout(loadState, 100);
@@ -49,7 +53,7 @@ $(function() {
     if (inputElem) {
       stackInputValue = $(inputElem).val();
     }
-    stackElem.innerHTML = stackTemplate.render({
+    stackElem.innerHTML = stackTemplate({
       rpncalc: rpncalc,
       helpers: templateHelpers,
       stackItemsToDisplay: 50,
@@ -81,7 +85,7 @@ $(function() {
   }
 
   function updateStatusBar() {
-    statusBarElem.innerHTML = statusBarTemplate.render({
+    statusBarElem.innerHTML = statusBarTemplate({
       rpncalc: rpncalc,
       helpers: templateHelpers
     });

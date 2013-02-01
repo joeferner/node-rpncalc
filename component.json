@@ -1,0 +1,9 @@
+{
+  "name": "node-rpncalc",
+  "version": "0.0.0",
+  "dependencies": {
+    "flight": "~1.0.0",
+    "ejs": "~0.8.3",
+    "jquery": "~1.9.0"
+  }
+}
